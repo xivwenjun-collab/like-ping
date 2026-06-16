@@ -205,10 +205,10 @@
   <div class="card">
     <div class="target">→ www.deeplumen.com/agent/</div>
     <div class="modes">
-      <button id="modePing" class="active">🔥 刷请求量</button>
-      <button id="modeVisit">👁 刷真实访问</button>
+      <button id="modePing" class="active">🔥 请求压测</button>
+      <button id="modeVisit">👁 真实访问测试</button>
     </div>
-    <div class="mode-hint" id="modeHint">狂点也没事，每点一次发一个请求（服务器日志可见）</div>
+    <div class="mode-hint" id="modeHint">持续点击施压，每次发一个请求（服务器日志可见）</div>
     <div class="btn-wrap">
       <div class="glow" id="glow"></div>
       <button id="likeBtn" class="like-btn" aria-label="like">🤍</button>
@@ -254,8 +254,8 @@
       modePing.classList.toggle("active", m === "ping");
       modeVisit.classList.toggle("active", m === "visit");
       modeHint.textContent = m === "ping"
-        ? "狂点也没事，每点一次发一个请求（服务器日志可见）"
-        : "每点一次真实打开页面跑统计（GA 会 +1），别太快、可能要允许弹窗";
+        ? "持续点击施压，每次发一个请求（服务器日志可见）"
+        : "每次真实打开页面跑统计（GA 会 +1），节奏放慢、可能要允许弹窗";
     }
 
     // 鼓励词，随机飘
@@ -386,7 +386,7 @@
         statusEl.className = "status err";
         return;
       }
-      statusEl.textContent = "✓ 已打开真实访问 #" + count + "（自动关闭）";
+      statusEl.textContent = "✓ 已发起真实访问测试 #" + count + "（自动关闭）";
       statusEl.className = "status ok";
       setTimeout(() => { try { w.close(); } catch (e) {} }, 3500);
     }
