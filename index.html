@@ -179,7 +179,11 @@
     /* ===================== 后端配置 =====================
        排行榜要“所有人都看到同一个榜”，需要一个共享后端。
        填了 SUPABASE 配置 → 全员实时榜；留 null → 仅本机本地榜。 */
-    const SUPABASE = null; // { url: "https://xxx.supabase.co", key: "anon-key", table: "like_ping_board" }
+    const SUPABASE = {
+      url: "https://hnikyfudkznkxumrnven.supabase.co",
+      key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaWt5ZnVka3pua3h1bXJudmVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzkyNTcsImV4cCI6MjA5NzE1NTI1N30.48IgsfMnqkLB2kr9fP124OhxWXwtPlZijLA5aqCWuYI",
+      table: "like_ping_board"
+    };
     /* ==================================================== */
 
     const TARGET = "https://www.deeplumen.com/agent/";
