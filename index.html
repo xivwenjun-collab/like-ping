@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Like → Ping</title>
+  <title>Agent 压测 · 水果进化</title>
   <style>
     :root {
       --bg: #0f1115;
@@ -11,6 +11,7 @@
       --text: #e8eaed;
       --muted: #8b909a;
       --accent: #ff4d6d;
+      --gold: #ffd166;
       --ok: #4ade80;
       --err: #f87171;
     }
@@ -20,214 +21,170 @@
       margin: 0;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      gap: 18px;
+      padding: 40px 16px;
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
-      overflow: hidden;
+      flex-wrap: wrap;
     }
-    /* 全屏发红的氛围光，随点击越来越浓 */
     #heat {
       position: fixed; inset: 0;
-      background: radial-gradient(circle at 50% 45%, rgba(255,40,80,0.55), transparent 60%);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .4s ease;
-      z-index: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(255,80,60,0.5), transparent 60%);
+      opacity: 0; pointer-events: none; transition: opacity .4s ease; z-index: 0;
     }
-    #confetti {
-      position: fixed; inset: 0;
-      pointer-events: none;
-      z-index: 5;
-    }
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+
     .card {
-      position: relative;
-      z-index: 2;
+      position: relative; z-index: 2;
       width: 340px;
       background: var(--card);
       border: 1px solid #23262f;
       border-radius: 18px;
-      padding: 30px 28px;
+      padding: 26px 26px 28px;
       text-align: center;
       box-shadow: 0 12px 40px rgba(0,0,0,.45);
     }
-    .target {
-      font-size: 12px;
-      color: var(--muted);
-      word-break: break-all;
-      margin-bottom: 16px;
-    }
-    /* 模式切换 */
+    .target { font-size: 12px; color: var(--muted); word-break: break-all; margin-bottom: 14px; }
+
     .modes {
-      display: flex;
-      gap: 4px;
-      background: #11141a;
-      border: 1px solid #23262f;
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 20px;
+      display: flex; gap: 4px; background: #11141a;
+      border: 1px solid #23262f; border-radius: 10px; padding: 4px; margin-bottom: 18px;
     }
     .modes button {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 12px;
-      padding: 7px 4px;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background .2s, color .2s;
-      line-height: 1.3;
+      flex: 1; border: none; background: transparent; color: var(--muted);
+      font-size: 12px; padding: 7px 4px; border-radius: 7px; cursor: pointer;
+      transition: background .2s, color .2s; line-height: 1.3;
     }
     .modes button.active { background: var(--accent); color: #fff; font-weight: 700; }
-    .mode-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin: -12px 0 16px;
-      min-height: 14px;
-    }
-    .btn-wrap {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-    }
+    .mode-hint { font-size: 11px; color: var(--muted); margin: -10px 0 16px; min-height: 14px; }
+
+    .btn-wrap { position: relative; width: 130px; height: 130px; margin: 0 auto; }
     .glow {
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      background: var(--accent);
-      filter: blur(22px);
-      opacity: 0;
-      transform: scale(.6);
-      transition: opacity .3s ease, transform .3s ease;
+      position: absolute; inset: 0; border-radius: 50%;
+      background: var(--accent); filter: blur(24px); opacity: 0;
+      transform: scale(.6); transition: opacity .3s ease, transform .3s ease;
     }
-    .like-btn {
-      position: relative;
-      z-index: 1;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      background: #20141a;
-      font-size: 56px;
-      line-height: 120px;
+    .fruit-btn {
+      position: relative; z-index: 1; width: 130px; height: 130px;
+      border-radius: 50%; border: none; cursor: pointer; background: #20141a;
+      font-size: 64px; line-height: 130px; user-select: none; outline: none;
       transition: transform .08s ease, background .2s ease;
-      user-select: none;
-      outline: none;
       -webkit-tap-highlight-color: transparent;
     }
-    .like-btn:hover { background: #2a1820; }
-    .like-btn:active { transform: scale(.86); }
-    .like-btn.pop { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      40% { transform: scale(1.3); }
-      100% { transform: scale(1); }
-    }
-    .count {
-      margin-top: 16px;
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      transition: color .3s ease, text-shadow .3s ease;
-    }
+    .fruit-btn:hover { background: #2a1820; }
+    .fruit-btn:active { transform: scale(.86); }
+    .fruit-btn.pop { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }
+    .fruit-btn.evolve { animation: evolve .6s cubic-bezier(.3,1.6,.5,1); }
+    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.28)} 100%{transform:scale(1)} }
+    @keyframes evolve { 0%{transform:scale(1) rotate(0)} 35%{transform:scale(1.5) rotate(-12deg)} 70%{transform:scale(1.5) rotate(12deg)} 100%{transform:scale(1) rotate(0)} }
+
+    .count { margin-top: 14px; font-size: 46px; font-weight: 800; letter-spacing: -1.5px; transition: color .3s, text-shadow .3s; }
     .count-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .fruit-stage { font-size: 12px; color: var(--gold); margin-top: 4px; min-height: 16px; font-weight: 600; }
 
-    .cheer {
-      margin-top: 14px;
-      font-size: 15px;
-      font-weight: 700;
-      min-height: 20px;
-      color: var(--accent);
-      transition: opacity .2s ease;
-    }
-    .combo {
-      font-size: 12px;
-      color: #ffd166;
-      min-height: 14px;
-      margin-top: 2px;
-      font-weight: 600;
-    }
+    .cheer { margin-top: 12px; font-size: 15px; font-weight: 700; min-height: 20px; color: var(--accent); }
+    .combo { font-size: 12px; color: var(--gold); min-height: 14px; margin-top: 2px; font-weight: 600; }
 
-    /* 进度条：到下一个 100 还差多少 */
-    .progress {
-      margin: 16px auto 4px;
-      width: 100%;
-      height: 6px;
-      background: #23262f;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress > i {
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff4d6d, #ffb05c);
-      border-radius: 99px;
-      transition: width .25s ease;
-    }
+    .progress { margin: 14px auto 4px; width: 100%; height: 6px; background: #23262f; border-radius: 99px; overflow: hidden; }
+    .progress > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #ff4d6d, #ffb05c); border-radius: 99px; transition: width .25s ease; }
     .progress-label { font-size: 11px; color: var(--muted); }
 
-    .status {
-      margin-top: 14px;
-      font-size: 12px;
-      min-height: 16px;
-      color: var(--muted);
-    }
-    .status.ok { color: var(--ok); }
-    .status.err { color: var(--err); }
+    .status { margin-top: 12px; font-size: 12px; min-height: 16px; color: var(--muted); }
+    .status.ok { color: var(--ok); } .status.err { color: var(--err); }
 
-    /* 点击飘出的 +1 / 鼓励词 */
-    .float {
-      position: absolute;
-      left: 50%;
-      top: 30%;
-      transform: translateX(-50%);
-      font-weight: 800;
-      pointer-events: none;
-      z-index: 6;
-      white-space: nowrap;
-      animation: floatUp 1s ease-out forwards;
+    .float { position: absolute; left: 50%; top: 30%; transform: translateX(-50%); font-weight: 800; pointer-events: none; z-index: 6; white-space: nowrap; animation: floatUp 1s ease-out forwards; }
+    @keyframes floatUp { 0%{opacity:0;transform:translate(-50%,0) scale(.6)} 20%{opacity:1} 100%{opacity:0;transform:translate(-50%,-90px) scale(1.1)} }
+
+    /* 排行榜 */
+    .board {
+      position: relative; z-index: 2; width: 300px;
+      background: var(--card); border: 1px solid #23262f; border-radius: 18px;
+      padding: 22px 22px 24px; box-shadow: 0 12px 40px rgba(0,0,0,.45);
     }
-    @keyframes floatUp {
-      0%   { opacity: 0; transform: translate(-50%, 0) scale(.6); }
-      20%  { opacity: 1; }
-      100% { opacity: 0; transform: translate(-50%, -90px) scale(1.1); }
+    .board h2 { margin: 0 0 4px; font-size: 16px; }
+    .board .sub { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+    .name-row { display: flex; gap: 6px; margin-bottom: 14px; }
+    .name-row input {
+      flex: 1; background: #11141a; border: 1px solid #23262f; color: var(--text);
+      border-radius: 8px; padding: 8px 10px; font-size: 13px; outline: none;
     }
+    .name-row input:focus { border-color: var(--accent); }
+    .name-row button {
+      border: none; background: var(--accent); color: #fff; font-weight: 700;
+      border-radius: 8px; padding: 0 14px; cursor: pointer; font-size: 13px;
+    }
+    ol.rank { list-style: none; margin: 0; padding: 0; }
+    ol.rank li {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 9px; font-size: 14px; margin-bottom: 4px; background: #11141a;
+    }
+    ol.rank li.me { background: #2a1820; border: 1px solid var(--accent); }
+    ol.rank .pos { width: 22px; font-weight: 800; color: var(--muted); text-align: center; }
+    ol.rank li:nth-child(1) .pos { color: #ffd166; }
+    ol.rank li:nth-child(2) .pos { color: #cfd3dc; }
+    ol.rank li:nth-child(3) .pos { color: #d8956b; }
+    ol.rank .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    ol.rank .ct { font-weight: 800; color: var(--accent); }
+    .board .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 16px 0; }
+    .board .mode-tag { margin-top: 12px; font-size: 11px; color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
   <div id="heat"></div>
   <canvas id="confetti"></canvas>
 
+  <!-- 主卡片 -->
   <div class="card">
-    <div class="target">→ www.deeplumen.com/agent/</div>
+    <div class="target">→ www.deeplumen.com/agent/ · 负载测试</div>
     <div class="modes">
       <button id="modePing" class="active">🔥 请求压测</button>
       <button id="modeVisit">👁 真实访问测试</button>
     </div>
     <div class="mode-hint" id="modeHint">持续点击施压，每次发一个请求（服务器日志可见）</div>
+
     <div class="btn-wrap">
       <div class="glow" id="glow"></div>
-      <button id="likeBtn" class="like-btn" aria-label="like">🤍</button>
+      <button id="fruitBtn" class="fruit-btn" aria-label="tap">🍎</button>
     </div>
     <div class="count" id="count">0</div>
-    <div class="count-label">次点赞 · 已发送请求</div>
+    <div class="count-label">次点击 · 已发送请求</div>
+    <div class="fruit-stage" id="fruitStage">🍎 苹果 · 第 100 次进化</div>
 
-    <div class="cheer" id="cheer">点一下，开始吧 ✨</div>
+    <div class="cheer" id="cheer">点一下，开始压测 🍎</div>
     <div class="combo" id="combo"></div>
 
     <div class="progress"><i id="bar"></i></div>
-    <div class="progress-label" id="progressLabel">距离下一个里程碑还差 100 下</div>
+    <div class="progress-label" id="progressLabel">距离下一次进化还差 100 下</div>
 
     <div class="status" id="status"></div>
   </div>
 
+  <!-- 排行榜 -->
+  <div class="board">
+    <h2>🏆 点击排行榜</h2>
+    <div class="sub" id="boardSub">本地排行（仅本机）· 看实时全员排名需联网后端</div>
+    <div class="name-row">
+      <input id="nameInput" maxlength="16" placeholder="输入昵称参赛" />
+      <button id="nameSave">参赛</button>
+    </div>
+    <ol class="rank" id="rankList"></ol>
+    <div class="empty" id="rankEmpty">还没有人点击，抢第一吧！</div>
+    <div class="mode-tag" id="boardMode"></div>
+  </div>
+
   <script>
+    /* ===================== 后端配置 =====================
+       排行榜要“所有人都看到同一个榜”，需要一个共享后端。
+       填了 SUPABASE 配置 → 全员实时榜；留 null → 仅本机本地榜。 */
+    const SUPABASE = null; // { url: "https://xxx.supabase.co", key: "anon-key", table: "like_ping_board" }
+    /* ==================================================== */
+
     const TARGET = "https://www.deeplumen.com/agent/";
-    const btn = document.getElementById("likeBtn");
+
+    const btn = document.getElementById("fruitBtn");
     const countEl = document.getElementById("count");
     const statusEl = document.getElementById("status");
     const cheerEl = document.getElementById("cheer");
@@ -236,12 +193,25 @@
     const heatEl = document.getElementById("heat");
     const barEl = document.getElementById("bar");
     const progressLabel = document.getElementById("progressLabel");
+    const fruitStage = document.getElementById("fruitStage");
     const wrap = document.querySelector(".btn-wrap");
 
-    let count = 0;
-    let comboCount = 0;
-    let lastClick = 0;
-    let mode = "ping"; // "ping" | "visit"
+    let count = 0, comboCount = 0, lastClick = 0, mode = "ping";
+    let curFruitIdx = 0;
+
+    // 水果进化：苹果起步，每 100 次换一个，1000 次西瓜（封顶）
+    const FRUITS = ["🍎","🍐","🍊","🍋","🍌","🍑","🍓","🍒","🍍","🍈","🍉"];
+    const FRUIT_NAMES = ["苹果","梨","橘子","柠檬","香蕉","桃子","草莓","樱桃","菠萝","甜瓜","西瓜"];
+    function fruitIdx(c) { return Math.min(Math.floor(c / 100), FRUITS.length - 1); }
+    function refreshStage() {
+      const idx = curFruitIdx;
+      btn.textContent = FRUITS[idx];
+      if (idx >= FRUITS.length - 1) {
+        fruitStage.textContent = `${FRUITS[idx]} ${FRUIT_NAMES[idx]} · 终极形态达成！`;
+      } else {
+        fruitStage.textContent = `${FRUITS[idx]} ${FRUIT_NAMES[idx]} · 第 ${(idx + 1) * 100} 次进化成 ${FRUITS[idx + 1]}`;
+      }
+    }
 
     // 模式切换
     const modePing = document.getElementById("modePing");
@@ -258,185 +228,186 @@
         : "每次真实打开页面跑统计（GA 会 +1），节奏放慢、可能要允许弹窗";
     }
 
-    // 鼓励词，随机飘
-    const CHEERS = [
-      "好耶！", "继续！", "再来一个！", "手感不错 👍", "停不下来了～",
-      "你超猛！", "节奏起来了！", "就是这样！", "再多一点！", "无敌了！",
-      "点赞之王 👑", "热度拉满！", "燃起来了 🔥", "保持！", "上头了吧？"
-    ];
-    // 里程碑专属鼓励
-    const MILESTONES = {
-      10:  "连点 10 下，热身完成！",
-      25:  "25 下！手速惊人 ⚡",
-      50:  "半百达成，势不可挡！",
-      100: "💯 一百下！传奇诞生！",
-    };
-
-    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    const CHEERS = ["好耶！","继续！","再来一个！","手感不错 👍","停不下来了～","你超猛！","节奏起来了！","就是这样！","再多一点！","无敌了！","压测之王 👑","热度拉满！","燃起来了 🔥","保持！","上头了吧？"];
+    function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 
     function spawnFloat(text, color) {
       const el = document.createElement("div");
-      el.className = "float";
-      el.textContent = text;
+      el.className = "float"; el.textContent = text;
       el.style.color = color || "#fff";
-      el.style.fontSize = (14 + Math.random() * 10) + "px";
-      el.style.left = (40 + Math.random() * 20) + "%";
-      wrap.appendChild(el);
-      setTimeout(() => el.remove(), 1000);
+      el.style.fontSize = (14 + Math.random()*10) + "px";
+      el.style.left = (40 + Math.random()*20) + "%";
+      wrap.appendChild(el); setTimeout(() => el.remove(), 1000);
     }
 
-    // 越点越红：氛围光 + 数字发光 + 按钮光晕，随 count 增强（封顶）
     function updateHeat() {
-      const heat = Math.min(count / 100, 1); // 0~1，100 下达到最浓
-      heatEl.style.opacity = (heat * 0.85).toFixed(2);
-      glowEl.style.opacity = (0.25 + heat * 0.6).toFixed(2);
-      glowEl.style.transform = `scale(${(0.7 + heat * 0.7).toFixed(2)})`;
-      const lum = 100 - heat * 35; // 数字从白渐变到红
-      countEl.style.color = `hsl(348, ${Math.round(heat * 100)}%, ${lum}%)`;
-      countEl.style.textShadow = `0 0 ${Math.round(heat * 26)}px rgba(255,60,90,${heat})`;
+      const heat = Math.min(count / 1000, 1);
+      heatEl.style.opacity = (heat * 0.8).toFixed(2);
+      glowEl.style.opacity = (0.25 + heat*0.6).toFixed(2);
+      glowEl.style.transform = `scale(${(0.7 + heat*0.7).toFixed(2)})`;
+      const lum = 100 - heat*35;
+      countEl.style.color = `hsl(348, ${Math.round(heat*100)}%, ${lum}%)`;
+      countEl.style.textShadow = `0 0 ${Math.round(heat*26)}px rgba(255,70,90,${heat})`;
     }
-
     function updateProgress() {
+      if (count >= 1000) { barEl.style.width = "100%"; progressLabel.textContent = "已达终极形态 🍉 西瓜！"; return; }
       const into = count % 100;
-      const pct = into === 0 && count > 0 ? 100 : into;
-      barEl.style.width = pct + "%";
-      const remain = (100 - (count % 100)) % 100 || (count === 0 ? 100 : 100);
-      const need = count % 100 === 0 ? 100 : 100 - (count % 100);
-      progressLabel.textContent = `距离下一个里程碑还差 ${need} 下`;
+      barEl.style.width = (into === 0 && count > 0 ? 100 : into) + "%";
+      progressLabel.textContent = `距离下一次进化还差 ${100 - (count % 100)} 下`;
     }
-
     function updateCombo() {
       const now = performance.now();
-      if (now - lastClick < 600) comboCount++;
-      else comboCount = 1;
+      comboCount = (now - lastClick < 600) ? comboCount + 1 : 1;
       lastClick = now;
-      if (comboCount >= 3) {
-        comboEl.textContent = `🔥 连击 x${comboCount}`;
-      } else {
-        comboEl.textContent = "";
-      }
+      comboEl.textContent = comboCount >= 3 ? `🔥 连击 x${comboCount}` : "";
     }
 
     // ===== 撒花 =====
     const canvas = document.getElementById("confetti");
     const ctx = canvas.getContext("2d");
-    let particles = [];
-    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    let particles = [], rafOn = false;
+    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
     resize(); addEventListener("resize", resize);
-
-    const COLORS = ["#ff4d6d", "#ffd166", "#06d6a0", "#4cc9f0", "#b388ff", "#fff"];
+    const COLORS = ["#ff4d6d","#ffd166","#06d6a0","#4cc9f0","#b388ff","#fff"];
     function burst(amount) {
-      for (let i = 0; i < amount; i++) {
-        particles.push({
-          x: innerWidth / 2,
-          y: innerHeight * 0.42,
-          vx: (Math.random() - 0.5) * 14,
-          vy: Math.random() * -12 - 4,
-          g: 0.35 + Math.random() * 0.2,
-          size: 5 + Math.random() * 7,
-          color: pick(COLORS),
-          rot: Math.random() * 6,
-          vr: (Math.random() - 0.5) * 0.4,
-          life: 1,
-        });
-      }
+      for (let i=0;i<amount;i++) particles.push({
+        x: innerWidth/2, y: innerHeight*0.4,
+        vx:(Math.random()-0.5)*14, vy:Math.random()*-12-4,
+        g:0.35+Math.random()*0.2, size:5+Math.random()*7,
+        color:pick(COLORS), rot:Math.random()*6, vr:(Math.random()-0.5)*0.4, life:1 });
       if (!rafOn) loop();
     }
-    let rafOn = false;
     function loop() {
-      rafOn = true;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      rafOn = true; ctx.clearRect(0,0,canvas.width,canvas.height);
       particles.forEach(p => {
-        p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.012;
-        ctx.save();
-        ctx.globalAlpha = Math.max(p.life, 0);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-        ctx.restore();
+        p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life-=0.012;
+        ctx.save(); ctx.globalAlpha=Math.max(p.life,0); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6); ctx.restore();
       });
-      particles = particles.filter(p => p.life > 0 && p.y < canvas.height + 40);
+      particles = particles.filter(p => p.life>0 && p.y<canvas.height+40);
       if (particles.length) requestAnimationFrame(loop);
-      else { ctx.clearRect(0, 0, canvas.width, canvas.height); rafOn = false; }
+      else { ctx.clearRect(0,0,canvas.width,canvas.height); rafOn=false; }
     }
 
-    // ===== 模式 A：发请求（no-cors，发出即可，可狂点）=====
+    // ===== 发请求 =====
     async function ping() {
-      const url = `${TARGET}?_=${count}-${Math.floor(performance.now())}`;
       try {
-        await fetch(url, { method: "GET", mode: "no-cors", cache: "no-store" });
-        statusEl.textContent = "✓ 请求已发送 #" + count;
-        statusEl.className = "status ok";
-      } catch (e) {
-        statusEl.textContent = "✗ 发送失败";
-        statusEl.className = "status err";
-      }
+        await fetch(`${TARGET}?_=${count}-${Math.floor(performance.now())}`, { method:"GET", mode:"no-cors", cache:"no-store" });
+        statusEl.textContent = "✓ 请求已发送 #" + count; statusEl.className = "status ok";
+      } catch (e) { statusEl.textContent = "✗ 发送失败"; statusEl.className = "status err"; }
     }
-
-    // ===== 模式 B：真实访问（新标签打开，跑 GA，3.5s 自动关）=====
     function visit() {
-      const w = window.open(
-        TARGET,
-        "dl_visit",
-        "width=480,height=640,noopener=no"
-      );
-      if (!w) {
-        statusEl.textContent = "✗ 弹窗被拦，请允许本站弹窗后重试";
-        statusEl.className = "status err";
-        return;
-      }
-      statusEl.textContent = "✓ 已发起真实访问测试 #" + count + "（自动关闭）";
-      statusEl.className = "status ok";
-      setTimeout(() => { try { w.close(); } catch (e) {} }, 3500);
+      const w = window.open(TARGET, "dl_visit", "width=480,height=640");
+      if (!w) { statusEl.textContent = "✗ 弹窗被拦，请允许本站弹窗后重试"; statusEl.className = "status err"; return; }
+      statusEl.textContent = "✓ 已发起真实访问测试 #" + count + "（自动关闭）"; statusEl.className = "status ok";
+      setTimeout(() => { try { w.close(); } catch(e){} }, 3500);
     }
+    function fire(){ mode === "visit" ? visit() : ping(); }
 
-    function fire() { mode === "visit" ? visit() : ping(); }
+    // ===== 排行榜后端 =====
+    const myName = () => localStorage.getItem("lp_name") || "";
+    async function lbSubmit() {
+      const name = myName(); if (!name) return;
+      if (SUPABASE) {
+        try {
+          await fetch(`${SUPABASE.url}/rest/v1/${SUPABASE.table}`, {
+            method: "POST",
+            headers: { "apikey": SUPABASE.key, "Authorization": "Bearer " + SUPABASE.key,
+                       "Content-Type": "application/json", "Prefer": "resolution=merge-duplicates" },
+            body: JSON.stringify({ name, count })
+          });
+        } catch (e) {}
+      } else {
+        const all = JSON.parse(localStorage.getItem("lp_board") || "{}");
+        all[name] = Math.max(all[name] || 0, count);
+        localStorage.setItem("lp_board", JSON.stringify(all));
+      }
+      renderBoard();
+    }
+    async function lbTop() {
+      if (SUPABASE) {
+        try {
+          const r = await fetch(`${SUPABASE.url}/rest/v1/${SUPABASE.table}?select=name,count&order=count.desc&limit=15`,
+            { headers: { "apikey": SUPABASE.key, "Authorization": "Bearer " + SUPABASE.key } });
+          return await r.json();
+        } catch (e) { return []; }
+      } else {
+        const all = JSON.parse(localStorage.getItem("lp_board") || "{}");
+        return Object.entries(all).map(([name,c]) => ({name, count:c})).sort((a,b)=>b.count-a.count).slice(0,15);
+      }
+    }
+    const rankList = document.getElementById("rankList");
+    const rankEmpty = document.getElementById("rankEmpty");
+    const boardSub = document.getElementById("boardSub");
+    const boardMode = document.getElementById("boardMode");
+    async function renderBoard() {
+      const rows = await lbTop();
+      rankList.innerHTML = "";
+      if (!rows.length) { rankEmpty.style.display = "block"; return; }
+      rankEmpty.style.display = "none";
+      rows.forEach((r, i) => {
+        const li = document.createElement("li");
+        if (r.name === myName()) li.className = "me";
+        li.innerHTML = `<span class="pos">${i+1}</span><span class="nm">${escapeHtml(r.name)}</span><span class="ct">${r.count}</span>`;
+        rankList.appendChild(li);
+      });
+    }
+    function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    // 昵称
+    const nameInput = document.getElementById("nameInput");
+    const nameSave = document.getElementById("nameSave");
+    nameInput.value = myName();
+    nameSave.addEventListener("click", () => {
+      const v = nameInput.value.trim();
+      if (!v) return;
+      localStorage.setItem("lp_name", v);
+      cheerEl.textContent = `${v} 已参赛，开冲！`;
+      lbSubmit();
+    });
+
+    // 提交节流：停手 1.2s 后上传一次，里程碑也上传
+    let submitTimer = null;
+    function scheduleSubmit() { clearTimeout(submitTimer); submitTimer = setTimeout(lbSubmit, 1200); }
 
     function onClick() {
       count++;
       countEl.textContent = count;
-      btn.textContent = "❤️";
 
-      // 弹跳
-      btn.classList.remove("pop");
-      void btn.offsetWidth;
-      btn.classList.add("pop");
+      // 水果进化判定
+      const newIdx = fruitIdx(count);
+      const evolved = newIdx !== curFruitIdx;
+      curFruitIdx = newIdx;
+      refreshStage();
 
-      updateHeat();
-      updateProgress();
-      updateCombo();
+      btn.classList.remove("pop","evolve"); void btn.offsetWidth;
+      btn.classList.add(evolved ? "evolve" : "pop");
 
-      // 飘字
+      updateHeat(); updateProgress(); updateCombo();
       spawnFloat("+1", "#ff8fa3");
       if (Math.random() < 0.4) spawnFloat(pick(CHEERS), "#ffd166");
 
-      // 鼓励文案
-      if (MILESTONES[count]) {
-        cheerEl.textContent = MILESTONES[count];
-      } else if (count % 25 === 0) {
-        cheerEl.textContent = pick(CHEERS);
-      } else if (comboCount >= 3) {
-        cheerEl.textContent = pick(CHEERS);
-      } else if (count <= 3) {
-        cheerEl.textContent = "感觉来了！再来 →";
-      }
-
-      // 撒花：每 100 下大庆祝；50 中庆祝；10/25 小庆祝
-      if (count % 100 === 0) {
-        burst(180);
-        cheerEl.textContent = "🎉 " + (count) + " 下！撒花！继续冲！";
-      } else if (count % 50 === 0) {
-        burst(90);
-      } else if (count % 10 === 0) {
-        burst(36);
-      }
+      if (evolved) {
+        burst(160);
+        cheerEl.textContent = (curFruitIdx >= FRUITS.length-1)
+          ? `🎉 1000 下！进化到终极 ${FRUITS[curFruitIdx]} 西瓜！`
+          : `🎉 进化成 ${FRUITS[curFruitIdx]} ${FRUIT_NAMES[curFruitIdx]}！继续冲！`;
+      } else if (count % 50 === 0) { burst(80); }
+      else if (count % 10 === 0) { burst(34); }
+      else if (comboCount >= 3) { cheerEl.textContent = pick(CHEERS); }
+      else if (count <= 3) { cheerEl.textContent = "感觉来了！再来 →"; }
 
       fire();
+      scheduleSubmit();
     }
-
     btn.addEventListener("click", onClick);
-    updateProgress();
+
+    // 初始化
+    refreshStage(); updateProgress();
+    if (SUPABASE) { boardSub.textContent = "全员实时榜 · 联网共享"; boardMode.textContent = "● 在线榜"; }
+    else { boardMode.textContent = "● 本地榜（未联后端）"; }
+    renderBoard();
+    setInterval(renderBoard, 5000); // 定时刷新榜单
   </script>
 </body>
 </html>
